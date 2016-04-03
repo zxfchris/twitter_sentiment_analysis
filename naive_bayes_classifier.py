@@ -9,6 +9,7 @@ class NaiveBayesClassifier:
     #start __init__
     def __init__(self, data, keyword, time, trainingDataFile, classifierDumpFile, trainingRequired = 0):
         #Instantiate classifier helper        
+        print "init"
         self.helper = classifier_helper.ClassifierHelper('data/feature_list.txt')
         
         self.lenTweets = len(data)
@@ -39,6 +40,7 @@ class NaiveBayesClassifier:
 
         #start getUniqData
     def getUniqData(self, data):
+        print "Unique Data"
         uniq_data = {}        
         for i in data:
             d = data[i]
@@ -53,7 +55,8 @@ class NaiveBayesClassifier:
     #end
     
     #start getProcessedTweets
-    def getProcessedTweets(self, data):        
+    def getProcessedTweets(self, data):
+        print "get proceesed tweets"
         tweets = {}        
         for i in data:
             d = data[i]
@@ -68,6 +71,7 @@ class NaiveBayesClassifier:
     #start getNBTrainedClassifier
     def getNBTrainedClassifer(self, trainingDataFile, classifierDumpFile):        
         # read all tweets and labels
+        print "get NBT trained"
         tweetItems = self.getFilteredTrainingData(trainingDataFile)
         
         tweets = []
@@ -86,6 +90,7 @@ class NaiveBayesClassifier:
     
     #start getFilteredTrainingData
     def getFilteredTrainingData(self, trainingDataFile):
+        print "get filetered "
         fp = open( trainingDataFile, 'rb' )
         min_count = self.getMinCount(trainingDataFile)  
         min_count = 40000
@@ -141,20 +146,33 @@ class NaiveBayesClassifier:
             tw = self.tweets[i]
             count = 0
             res = {}
+            total =0
+            trackp=0
+            trackng=0
+            trackne=0
             for t in tw:
                 label = self.classifier.classify(self.helper.extract_features(t.split()))
                 if(label == 'positive'):
                     self.pos_count[i] += 1
+                    trackp =trackp+1
                 elif(label == 'negative'):                
                     self.neg_count[i] += 1
+                    trackng =trackng+1
                 elif(label == 'neutral'):                
                     self.neut_count[i] += 1
+                    trackne =trackne+1
                 result = {'text': t, 'tweet': self.origTweets[i][count], 'label': label}
+                print result
                 res[count] = result
                 count += 1
             #end inner loop
             self.results[i] = res
         #end outer loop
+        total = trackp+trackne+trackng
+        print "Positive : ",trackp
+        print "Neutral : ",trackne
+        print "Negative : ",trackng
+        print "Total : ",total
     #end
 
     #start accuracy
