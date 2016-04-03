@@ -13,7 +13,7 @@ class MaxEntClassifier:
     def __init__(self, data, keyword, time, trainingDataFile, classifierDumpFile, trainingRequired = 0):
         #Instantiate classifier helper        
         self.helper = classifier_helper.ClassifierHelper('data/feature_list.txt')
-        
+        print "read input"
         self.lenTweets = len(data)
         self.origTweets = self.getUniqData(data)
         self.tweets = self.getProcessedTweets(self.origTweets)
@@ -41,6 +41,7 @@ class MaxEntClassifier:
     #end
             #start getUniqData
     def getUniqData(self, data):
+        print "getUniqData"
         uniq_data = {}        
         for i in data:
             d = data[i]
@@ -55,7 +56,8 @@ class MaxEntClassifier:
     #end
     
     #start getProcessedTweets
-    def getProcessedTweets(self, data):        
+    def getProcessedTweets(self, data):
+        print "getProcessedTweets"
         tweets = {}        
         for i in data:
             d = data[i]
@@ -71,7 +73,8 @@ class MaxEntClassifier:
     def getMaxEntTrainedClassifer(self, trainingDataFile, classifierDumpFile):        
         # read all tweets and labels
         # maxItems = 0 indicates read all training data
-        maxItems = 0 
+        print "getMaxEntTrainedClassifer"
+        maxItems = 0
         tweetItems = self.getFilteredTrainingData(trainingDataFile, maxItems)
         
         tweets = []
@@ -81,9 +84,9 @@ class MaxEntClassifier:
                     
         training_set = nltk.classify.apply_features(self.helper.extract_features, tweets)
         # Write back classifier        
-        classifier = nltk.classify.maxent.MaxentClassifier.train(training_set, 'GIS', trace=3, \
-                                    encoding=None, labels=None, sparse=True, gaussian_prior_sigma=0, max_iter = 5) 
-        outfile = open(classifierDumpFile, 'wb')        
+        classifier = nltk.classify.maxent.MaxentClassifier.train(training_set, 'GIS', trace=3,encoding=None, labels=None, sparse=True, gaussian_prior_sigma=0, max_iter = 5)
+        outfile = open(classifierDumpFile, 'wb')
+        print "Putting in dump file"
         pickle.dump(classifier, outfile)        
         outfile.close()        
         return classifier
@@ -92,6 +95,7 @@ class MaxEntClassifier:
     #start getFilteredTrainingData
     def getFilteredTrainingData(self, trainingDataFile, maxItems = 0):
         #maxItems = 0 indicates read all training data
+        print "getFiltered TrainingData"
         fp = open( trainingDataFile, 'rb' )
         if(maxItems == 0):
             min_count = self.getMinCount(trainingDataFile)        
@@ -102,7 +106,8 @@ class MaxEntClassifier:
         
         reader = csv.reader( fp, delimiter=',', quotechar='"', escapechar='\\' )
         tweetItems = []
-        count = 1       
+        count = 1
+        print "Sentiment classification"
         for row in reader:
             processed_tweet = self.helper.process_tweet(row[1])
             sentiment = row[0]
@@ -132,6 +137,7 @@ class MaxEntClassifier:
         fp = open( trainingDataFile, 'rb' )
         reader = csv.reader( fp, delimiter=',', quotechar='"', escapechar='\\' )
         neg_count, pos_count, neut_count = 0, 0, 0
+        print "get minimum tweets"
         for row in reader:
             sentiment = row[0]
             if(sentiment == 'neutral'):
@@ -145,29 +151,61 @@ class MaxEntClassifier:
     #end
     
         #start classify
-    def classify(self):        
+    def classify(self):
+        print "Classify tweets"
+        writer = csv.writer(open("test1.csv", "wb"))
+
         for i in self.tweets:
             tw = self.tweets[i]
             count = 0
             res = {}
+            test_tweets = []
+            res = {}
+            for words in tw:
+                words_filtered = [e.lower() for e in words.split() if(self.helper.is_ascii(e))]
+                test_tweets.append(words_filtered)
+            test_feature_vector = self.helper.getSVMFeatureVector(test_tweets)
+           # p_labels, p_accs, p_vals = svm_predict([0] * len(test_feature_vector),\
+            #                                    test_feature_vector, self.classifier)
+            total =0
+            trackp=0
+            trackng=0
+            trackne=0
+            count = 0
             for t in tw:
                 label = self.classifier.classify(self.helper.extract_features(t.split()))
+                #print label
                 if(label == 'positive'):
                     self.pos_count[i] += 1
+                    trackp =trackp+1
                 elif(label == 'negative'):                
                     self.neg_count[i] += 1
+                    trackng =trackng+1
                 elif(label == 'neutral'):                
                     self.neut_count[i] += 1
+                    trackne =trackne+1
                 result = {'text': t, 'tweet': self.origTweets[i][count], 'label': label}
+                newr = {'label': label,'text': t}
+                print newr
+
+                #writer.writerows({t, self.origTweets[i][count], label})
+                #writer.writerows(label)
+
                 res[count] = result
                 count += 1
             #end inner loop
             self.results[i] = res
         #end outer loop
+        total = trackp+trackne+trackng
+        print "Positive : ",trackp
+        print "Neutral : ",trackne
+        print "Negative : ",trackng
+        print "Total : ",total
     #end
 
     #start accuracy
     def accuracy(self):
+        print "accuracy"
         maxItems = 0
         tweets = self.getFilteredTrainingData(self.trainingDataFile)
         total = 0
@@ -189,6 +227,7 @@ class MaxEntClassifier:
 
     #start analyzeTweets
     def analyzeTweets(self):
+        print "Analyze tweets"
         tweets = self.getFilteredTrainingData(self.trainingDataFile)
         d = defaultdict(int)
         for (t, l) in tweets:
@@ -201,7 +240,8 @@ class MaxEntClassifier:
 
     #start writeOutput
     def writeOutput(self, filename, writeOption='w'):
-        fp = open(filename, writeOption)
+        print "Max Entropy"
+        fp = open('abc.txt', writeOption)
         for i in self.results:
             res = self.results[i]
             for j in res:
@@ -216,6 +256,7 @@ class MaxEntClassifier:
     
     #start getHTML
     def getHTML(self):
+        print "HEELOO"
         return self.html.getResultHTML(self.keyword, self.results, self.time, self.pos_count, \
                                        self.neg_count, self.neut_count, 'maxentropy')
     #end
