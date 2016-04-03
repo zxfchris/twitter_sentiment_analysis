@@ -6,16 +6,17 @@ import classifier_helper, html_helper
 #start class
 class SVMClassifier:
     """ SVM Classifier """
-    #variables    
+    #variables
     #start __init__
     def __init__(self, data, keyword, time, trainingDataFile, classifierDumpFile, trainingRequired = 0):
-        #Instantiate classifier helper        
+        #Instantiate classifier helper
+        print "svm init"
         self.helper = classifier_helper.ClassifierHelper('data/feature_list.txt')
-        
+
         self.lenTweets = len(data)
         self.origTweets = self.getUniqData(data)
         self.tweets = self.getProcessedTweets(self.origTweets)
-        
+
         self.results = {}
         self.neut_count = [0] * self.lenTweets
         self.pos_count = [0] * self.lenTweets
@@ -25,21 +26,27 @@ class SVMClassifier:
         self.time = time
         self.keyword = keyword
         self.html = html_helper.HTMLHelper()
-        
+
         #call training model
         if(trainingRequired):
+            print "Here 1"
             self.classifier = self.getSVMTrainedClassifer(trainingDataFile, classifierDumpFile)
         else:
+            print "Here 2"
             fp = open(classifierDumpFile, 'r')
             if(fp):
+                print "Here 3"
                 self.classifier = svm_load_model(classifierDumpFile)
             else:
+                print "Here 4"
                 self.classifier = self.getSVMTrainedClassifer(trainingDataFile, classifierDumpFile)
+
+
     #end
-    
+
     #start getUniqData
     def getUniqData(self, data):
-        uniq_data = {}        
+        uniq_data = {}
         for i in data:
             d = data[i]
             u = []
@@ -47,29 +54,31 @@ class SVMClassifier:
                 if element not in u:
                     u.append(element)
             #end inner loop
-            uniq_data[i] = u            
+            uniq_data[i] = u
         #end outer loop
         return uniq_data
     #end
-    
+
     #start getProcessedTweets
-    def getProcessedTweets(self, data):        
-        tweets = {}        
+    def getProcessedTweets(self, data):
+        print "get processed tweets"
+        tweets = {}
         for i in data:
             d = data[i]
             tw = []
             for t in d:
                 tw.append(self.helper.process_tweet(t))
-            tweets[i] = tw            
+            tweets[i] = tw
         #end loop
         return tweets
     #end
-    
+
     #start getNBTrainedClassifier
-    def getSVMTrainedClassifer(self, trainingDataFile, classifierDumpFile):        
+    def getSVMTrainedClassifer(self, trainingDataFile, classifierDumpFile):
+        print "get SVM Trained classifier"
         # read all tweets and labels
         tweetItems = self.getFilteredTrainingData(trainingDataFile)
-        
+
         tweets = []
         for (words, sentiment) in tweetItems:
             words_filtered = [e.lower() for e in words.split() if(self.helper.is_ascii(e))]
@@ -78,7 +87,7 @@ class SVMClassifier:
         results = self.helper.getSVMFeatureVectorAndLabels(tweets)
         self.feature_vectors = results['feature_vector']
         self.labels = results['labels']
-        
+
         #SVM Trainer
         problem = svm_problem(self.labels, self.feature_vectors)
         #'-q' option suppress console output
@@ -89,23 +98,24 @@ class SVMClassifier:
         svm_save_model(classifierDumpFile, classifier)
         return classifier
     #end
-    
+
     #start getFilteredTrainingData
     def getFilteredTrainingData(self, trainingDataFile):
+        print "svm filtered traininng data"
         fp = open( trainingDataFile, 'rb' )
         min_count = self.getMinCount(trainingDataFile)
         min_count = 40000
         neg_count, pos_count, neut_count = 0, 0, 0
-        
+
         reader = csv.reader( fp, delimiter=',', quotechar='"', escapechar='\\' )
         tweetItems = []
-        count = 1       
+        count = 1
         for row in reader:
             #processed_tweet = self.helper.process_tweet(row[4])
             processed_tweet = self.helper.process_tweet(row[1])
             sentiment = row[0]
-            
-            if(sentiment == 'neutral'):                
+
+            if(sentiment == 'neutral'):
                 if(neut_count == int(min_count)):
                     continue
                 neut_count += 1
@@ -117,16 +127,17 @@ class SVMClassifier:
                 if(neg_count == int(min_count)):
                     continue
                 neg_count += 1
-            
+
             tweet_item = processed_tweet, sentiment
             tweetItems.append(tweet_item)
             count +=1
         #end loop
         return tweetItems
-    #end 
+    #end
 
     #start getMinCount
     def getMinCount(self, trainingDataFile):
+        print "svm min count"
         fp = open( trainingDataFile, 'rb' )
         reader = csv.reader( fp, delimiter=',', quotechar='"', escapechar='\\' )
         neg_count, pos_count, neut_count = 0, 0, 0
@@ -144,6 +155,7 @@ class SVMClassifier:
 
     #start classify
     def classify(self):
+        print "svm classify"
         for i in self.tweets:
             tw = self.tweets[i]
             test_tweets = []
@@ -154,21 +166,28 @@ class SVMClassifier:
             test_feature_vector = self.helper.getSVMFeatureVector(test_tweets)
             p_labels, p_accs, p_vals = svm_predict([0] * len(test_feature_vector),\
                                                 test_feature_vector, self.classifier)
-
+            total =0
+            trackp=0
+            trackng=0
+            trackne=0
             count = 0
             for t in tw:
                 label = p_labels[count]
                 if(label == 0):
                     label = 'positive'
                     self.pos_count[i] += 1
+                    trackp =trackp+1
                 elif(label == 1):
                     label = 'negative'
                     self.neg_count[i] += 1
+                    trackng =trackng+1
                 elif(label == 2):
                     label = 'neutral'
                     self.neut_count[i] += 1
+                    trackne =trackne+1
                 result = {'text': t, 'tweet': self.origTweets[i][count], 'label': label}
-                print result
+                newr = {'label': label,'text': t}
+                print newr
                 # fp = open('movieAnalyse','a+')
                 # fp.write(result)
                 # print
@@ -176,12 +195,21 @@ class SVMClassifier:
                 count += 1
             #end inner loop
             self.results[i] = res
+           # self.tweets1 =self.writeOutput(self.results,"exa.csv")
         #end outer loop
+        total = trackp+trackne+trackng
+        print "Positive : ",trackp
+        print "Neutral : ",trackne
+        print "Negative : ",trackng
+        print "Total : ",total
+
     #end
-           
+
     #start writeOutput
     def writeOutput(self, filename, writeOption='w'):
+        print"write oytput"
         fp = open(filename, writeOption)
+        print "Libsvm Filename Output",filename
         for i in self.results:
             res = self.results[i]
             for j in res:
@@ -191,11 +219,12 @@ class SVMClassifier:
                 writeStr = text+" | "+label+"\n"
                 fp.write(writeStr)
             #end inner loop
-        #end outer loop      
-    #end writeOutput    
+        #end outer loop
+    #end writeOutput
 
     #start accuracy
     def accuracy(self):
+        print "svm accuracy"
         tweets = self.getFilteredTrainingData(self.trainingDataFile)
         test_tweets = []
         for (t, l) in tweets:
@@ -229,11 +258,12 @@ class SVMClassifier:
         #end loop
         self.accuracy = (float(correct)/total)*100
         print 'Total = %d, Correct = %d, Wrong = %d, Accuracy = %.2f' % \
-                                                (total, correct, wrong, self.accuracy)        
+                                                (total, correct, wrong, self.accuracy)
     #end
 
     #start getHTML
     def getHTML(self):
+        print "svm get HTML"
         return self.html.getResultHTML(self.keyword, self.results, self.time, self.pos_count, \
                                        self.neg_count, self.neut_count, 'svm')
     #end
