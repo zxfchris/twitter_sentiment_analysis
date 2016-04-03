@@ -1,8 +1,10 @@
 import get_twitter_data
-import baseline_classifier, naive_bayes_classifier, max_entropy_classifier, libsvm_classifier
+import baseline_classifier,naive_bayes_classifier,max_entropy_classifier
+import libsvm_classifier
 import json,sys,pickle
 
-keyword = 'Zootopia'
+
+keyword = 'worst'
 time = 'today'
 twitterData = get_twitter_data.TwitterData()
 tweets = twitterData.getTwitterData(keyword, time)
@@ -22,39 +24,43 @@ if(algorithm == 'baseline'):
     bc = baseline_classifier.BaselineClassifier(tweets, keyword, time)
     bc.classify()
     val = bc.getHTML()
-elif(algorithm == 'naivebayes'):    
+elif(algorithm == 'naivebayes'):
     #trainingDataFile = 'data/training_trimmed.csv'
-    trainingDataFile = 'data/full_training_dataset.csv'
+    #trainingDataFile = 'data/b
+    print"naive"
+    trainingDataFile = 'data/full_training_dataset-000.csv'
+
     classifierDumpFile = 'data/test/naivebayes_test_model.pickle'
+    print "naivebaes"
     trainingRequired = 1
     nb = naive_bayes_classifier.NaiveBayesClassifier(tweets, keyword, time,\
                                   trainingDataFile, classifierDumpFile, trainingRequired)
     nb.classify()
     nb.accuracy()
-elif(algorithm == 'maxent'):    
+elif(algorithm == 'maxent'):
     #trainingDataFile = 'data/training_trimmed.csv'
-    trainingDataFile = 'data/full_training_dataset.csv'
+    #trainingDataFile = 'data/full_training_dataset.csv'
+    #trainingDataFile = 'data/newtest.csv'
+    trainingDataFile = 'data/full_training_dataset-000.csv'
     classifierDumpFile = 'data/test/maxent_test_model.pickle'
-    trainingRequired = 1
+    print "maxent"
+    trainingRequired = 0
+    print "Start",time
     maxent = max_entropy_classifier.MaxEntClassifier(tweets, keyword, time,\
                                   trainingDataFile, classifierDumpFile, trainingRequired)
-    #maxent.analyzeTweets()
+    print "End ",time
+    maxent.analyzeTweets()
     maxent.classify()
+    print "Next End ",time
+
     maxent.accuracy()
-elif(algorithm == 'svm'):    
+elif(algorithm == 'svm'):
     #trainingDataFile = 'data/training_trimmed.csv'
-    #trainingDataFile = 'data/full_training_dataset.csv'     
-    trainingDataFile = 'data/test/test.csv'           
+    #trainingDataFile = 'data/full_training_dataset.csv'
+    print "svm"
+    trainingDataFile = 'data/full_training_dataset-000.csv'
     classifierDumpFile = 'data/test/svm_test_model.pickle'
-    trainingRequired = 0
-    # print tweets
-    print '****************'
-    print type(tweets)
-    print tweets[0]
-    print '----------------'
-    print type(tweets[0])
-    print tweets[0]
-    print '!!!!!!!!!!!!!!!!'
+    trainingRequired = 1
     sc = libsvm_classifier.SVMClassifier(tweets, keyword, time,\
                                   trainingDataFile, classifierDumpFile, trainingRequired)
     sc.classify()
