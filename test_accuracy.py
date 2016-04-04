@@ -15,7 +15,7 @@ if(len(sys.argv) < 2):
 algorithm = sys.argv[1]
 
 if(algorithm == 'baseline'):
-    bc = baseline_classifier.BaselineClassifier(tweets, keyword, time)
+    bc = baseline_classifier.BaselineClassifier(tweets, None, None)
     bc.classify()
     val = bc.getHTML()
 elif(algorithm == 'naivebayes'):
@@ -24,7 +24,7 @@ elif(algorithm == 'naivebayes'):
     classifierDumpFile = 'data/test/naivebayes_test_model.pickle'
     print "naivebaes"
     trainingRequired = 0
-    nb = naive_bayes_classifier.NaiveBayesClassifier(plainstring2, keyword, time,\
+    nb = naive_bayes_classifier.NaiveBayesClassifier(plainstring2, None, None,\
                                   testDataFile, classifierDumpFile, trainingRequired)
     #nb.classify()
     nb.accuracy()
@@ -34,7 +34,7 @@ elif(algorithm == 'maxent'):
     print "maxent"
     trainingRequired = 0
     print "Start",time
-    maxent = max_entropy_classifier.MaxEntClassifier(plainstring2, keyword, time,\
+    maxent = max_entropy_classifier.MaxEntClassifier(plainstring2, None, None,\
                                   testDataFile, classifierDumpFile, trainingRequired)
     print "End ",time
     maxent.analyzeTweets()
@@ -46,8 +46,8 @@ elif(algorithm == 'svm'):
     testDataFile = 'data/test/test.csv'
     classifierDumpFile = 'data/test/svm_test_model.pickle'
     trainingRequired = 0
-    print tweets
-    sc = libsvm_classifier.SVMClassifier(plainstring2, keyword, time,\
+    #print tweets
+    sc = libsvm_classifier.SVMClassifier(plainstring2, None, None,\
                                   testDataFile, classifierDumpFile, trainingRequired)
     #sc.classify()
     sc.accuracy()
