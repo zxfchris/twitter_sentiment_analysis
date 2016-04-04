@@ -25,23 +25,16 @@ if(algorithm == 'baseline'):
     bc.classify()
     val = bc.getHTML()
 elif(algorithm == 'naivebayes'):
-    #trainingDataFile = 'data/training_trimmed.csv'
-    #trainingDataFile = 'data/b
-    print"naive"
-    trainingDataFile = 'data/full_training_dataset-000.csv'
+    print "naive"
+    trainingDataFile = 'data/full_training_dataset.csv'
 
     classifierDumpFile = 'data/test/naivebayes_test_model.pickle'
-    print "naivebaes"
     trainingRequired = 1
     nb = naive_bayes_classifier.NaiveBayesClassifier(tweets, keyword, time,\
                                   trainingDataFile, classifierDumpFile, trainingRequired)
     nb.classify()
-    nb.accuracy()
 elif(algorithm == 'maxent'):
-    #trainingDataFile = 'data/training_trimmed.csv'
-    #trainingDataFile = 'data/full_training_dataset.csv'
-    #trainingDataFile = 'data/newtest.csv'
-    trainingDataFile = 'data/full_training_dataset-000.csv'
+    trainingDataFile = 'data/full_training_dataset.csv'
     classifierDumpFile = 'data/test/maxent_test_model.pickle'
     print "maxent"
     trainingRequired = 0
@@ -53,17 +46,18 @@ elif(algorithm == 'maxent'):
     maxent.classify()
     print "Next End ",time
 
-    maxent.accuracy()
 elif(algorithm == 'svm'):
     #trainingDataFile = 'data/training_trimmed.csv'
     #trainingDataFile = 'data/full_training_dataset.csv'
     print "svm"
-    trainingDataFile = 'data/full_training_dataset-000.csv'
+    testDataFile = 'data/test/test.csv'
+    trainingDataFile = 'data/full_training_dataset.csv'
     classifierDumpFile = 'data/test/svm_test_model.pickle'
-    trainingRequired = 1
+    trainingRequired = 0
+    # sc = libsvm_classifier.SVMClassifier(tweets, keyword, time,\
+    #                               trainingDataFile, classifierDumpFile, trainingRequired)
     sc = libsvm_classifier.SVMClassifier(tweets, keyword, time,\
-                                  trainingDataFile, classifierDumpFile, trainingRequired)
+                                  testDataFile, classifierDumpFile, trainingRequired)
     sc.classify()
-    sc.accuracy()
 
 print 'Done'
