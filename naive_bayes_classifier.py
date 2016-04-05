@@ -9,7 +9,7 @@ class NaiveBayesClassifier:
     #start __init__
     def __init__(self, data, keyword, time, trainingDataFile, classifierDumpFile, trainingRequired = 0):
         #Instantiate classifier helper        
-        print "init"
+        #print "init"
         self.helper = classifier_helper.ClassifierHelper('data/feature_list.txt')
         
         self.lenTweets = len(data)
@@ -40,7 +40,7 @@ class NaiveBayesClassifier:
 
         #start getUniqData
     def getUniqData(self, data):
-        print "Unique Data"
+        #print "Unique Data"
         uniq_data = {}        
         for i in data:
             d = data[i]
@@ -56,7 +56,7 @@ class NaiveBayesClassifier:
     
     #start getProcessedTweets
     def getProcessedTweets(self, data):
-        print "get proceesed tweets"
+        #print "get proceesed tweets"
         tweets = {}        
         for i in data:
             d = data[i]
@@ -71,7 +71,7 @@ class NaiveBayesClassifier:
     #start getNBTrainedClassifier
     def getNBTrainedClassifer(self, trainingDataFile, classifierDumpFile):        
         # read all tweets and labels
-        print "get NBT trained"
+        #print "get NBT trained"
         tweetItems = self.getFilteredTrainingData(trainingDataFile)
         
         tweets = []
@@ -90,7 +90,7 @@ class NaiveBayesClassifier:
     
     #start getFilteredTrainingData
     def getFilteredTrainingData(self, trainingDataFile):
-        print "get filetered "
+        #print "get filetered "
         fp = open( trainingDataFile, 'rb' )
         min_count = self.getMinCount(trainingDataFile)  
         min_count = 40000
@@ -162,7 +162,7 @@ class NaiveBayesClassifier:
                     self.neut_count[i] += 1
                     trackne =trackne+1
                 result = {'text': t, 'tweet': self.origTweets[i][count], 'label': label}
-                print result
+                #print result
                 res[count] = result
                 count += 1
             #end inner loop

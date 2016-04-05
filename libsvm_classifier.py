@@ -10,7 +10,7 @@ class SVMClassifier:
     #start __init__
     def __init__(self, data, keyword, time, trainingDataFile, classifierDumpFile, trainingRequired = 0):
         #Instantiate classifier helper
-        print "svm init"
+        #print "svm init"
         self.helper = classifier_helper.ClassifierHelper('data/feature_list.txt')
 
         self.lenTweets = len(data)
@@ -29,16 +29,16 @@ class SVMClassifier:
 
         #call training model
         if(trainingRequired):
-            print "Here 1"
+            #print "Here 1"
             self.classifier = self.getSVMTrainedClassifer(trainingDataFile, classifierDumpFile)
         else:
-            print "Here 2"
+            #print "Here 2"
             fp = open(classifierDumpFile, 'r')
             if(fp):
-                print "Here 3"
+                #print "Here 3"
                 self.classifier = svm_load_model(classifierDumpFile)
             else:
-                print "Here 4"
+                #print "Here 4"
                 self.classifier = self.getSVMTrainedClassifer(trainingDataFile, classifierDumpFile)
 
 
@@ -61,7 +61,7 @@ class SVMClassifier:
 
     #start getProcessedTweets
     def getProcessedTweets(self, data):
-        print "get processed tweets"
+        #print "get processed tweets"
         tweets = {}
         for i in data:
             d = data[i]
@@ -75,7 +75,7 @@ class SVMClassifier:
 
     #start getNBTrainedClassifier
     def getSVMTrainedClassifer(self, trainingDataFile, classifierDumpFile):
-        print "get SVM Trained classifier"
+        #print "get SVM Trained classifier"
         # read all tweets and labels
         tweetItems = self.getFilteredTrainingData(trainingDataFile)
 
@@ -155,7 +155,7 @@ class SVMClassifier:
 
     #start classify
     def classify(self):
-        print "svm classify"
+        #print "svm classify"
         for i in self.tweets:
             tw = self.tweets[i]
             test_tweets = []
@@ -187,7 +187,7 @@ class SVMClassifier:
                     trackne =trackne+1
                 result = {'text': t, 'tweet': self.origTweets[i][count], 'label': label}
                 newr = {'label': label,'text': t}
-                print newr
+                #print newr
                 # fp = open('movieAnalyse','a+')
                 # fp.write(result)
                 # print
@@ -202,6 +202,7 @@ class SVMClassifier:
         print "Neutral : ",trackne
         print "Negative : ",trackng
         print "Total : ",total
+        #print "Count: ",count 
 
     #end
 
@@ -224,7 +225,7 @@ class SVMClassifier:
 
     #start accuracy
     def accuracy(self):
-        print "svm accuracy"
+        #print "svm accuracy"
         tweets = self.getFilteredTrainingData(self.trainingDataFile)
         test_tweets = []
         for (t, l) in tweets:

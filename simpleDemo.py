@@ -5,7 +5,11 @@ import pprint
 import nltk.classify
 import libsvm_classifier
 import baseline_classifier,naive_bayes_classifier,max_entropy_classifier
+import sys
 
+if(len(sys.argv) < 2):
+    print "Please choose the algorithm to test, sytanx = python simpleDemo.py (svm|naivebayes|maxent)"
+    exit()
 #start replaceTwoOrMore
 def replaceTwoOrMore(s):
     #look for 2 or more repetitions of character
@@ -77,6 +81,9 @@ def extract_features(tweet):
     return features
 #end
 
+
+algorithm = sys.argv[1]
+
 #sampleTweets
 #Read the tweets one by one and process it
 inpTweets = csv.reader(open('data/sampleTweets.csv', 'rb'), delimiter=',', quotechar='|')
@@ -107,68 +114,46 @@ testTweet = 'I like you'
 processedTestTweet = processTweet(testTweet)
 sentiment = NBClassifier.classify(extract_features(getFeatureVector(processedTestTweet, stopWords)))
 # print getFeatureVector(processedTestTweet, stopWords)
-print "testTweet = %s, sentiment = %s\n" % (testTweet, sentiment)
+#print "testTweet = %s, sentiment = %s\n" % (testTweet, sentiment)
 
 
+for i in range(0,45):
+    plainstring2 = dict()
+    inputTweets = list()
+    movieFileName = '/Users/zhengxifeng/Documents/CS5344-BigData Analytics Technology/Project/twitter_sentiment_analysis/data/documents-export-2016-04-03/Maleficent_update-'
+    movieFileName += "{:0>3d}".format(i) + ".csv.xls"
+    print movieFileName
+    movieComments = open(movieFileName, 'rb')
 
-
-plainstring2 = dict()
-inputTweets = list()
-# testTweet = "I like you"
-# inputTweets.append(unicode(testTweet, "utf-8"))
-# testTweet = "Can't believe I have to wait another 6 months for my phone contract to end! I'm bored now!!! The 12 month contract would have run out!!! "
-# inputTweets.append(unicode(testTweet, "utf-8"))
-# testTweet = "When did I felt so lonely? "
-# inputTweets.append(unicode(testTweet, "utf-8"))
-# testTweet = "ugh. a huge headache, coughing constantly, legs feeling week, and feeling like throwing up.  This sucks beyond compare "
-# inputTweets.append(unicode(testTweet, "utf-8"))
-# testTweet = "Got to go clean now, knowing it will be messed up again by tomorrow. "
-# inputTweets.append(unicode(testTweet, "utf-8"))
-# testTweet = "is still hoping Google take over the world. Algebra revision "
-# inputTweets.append(unicode(testTweet, "utf-8"))
-# testTweet = "has his new M4400 w/ Core2 Extreme X9100 &amp; SSE4.1 64-bit buildchain finally rebuilt, but also found an igraph/ARPACK regression "
-# inputTweets.append(unicode(testTweet, "utf-8"))
-# testTweet = "@slightsarcasm tom  (time of month ;) ) not your bf tom :L"
-# inputTweets.append(unicode(testTweet, "utf-8"))
-# testTweet = "what really surprises about wisegirls is its low-key quality and genuine tenderness ."
-# inputTweets.append(unicode(testTweet, "utf-8"))
-# testTweet = "( wendigo is ) why we go to the cinema : to be fed through the eye , the heart , the mind ."
-# inputTweets.append(unicode(testTweet, "utf-8"))
-# testTweet = "one of the greatest family-oriented , fantasy-adventure movies ever ."
-# inputTweets.append(unicode(testTweet, "utf-8"))
-# testTweet = "ultimately , it ponders the reasons we need stories so much ."
-# inputTweets.append(unicode(testTweet, "utf-8"))
-# testTweet = "an utterly compelling 'who wrote it' in which the reputation of the most famous author who ever lived comes into question ."
-# inputTweets.append(unicode(testTweet, "utf-8"))
-# testTweet = "illuminating if overly talky documentary ."
-# inputTweets.append(unicode(testTweet, "utf-8"))
-movieComments = open('/Users/PAllAvi/Downloads/documents-export-2016-04-02/Maleficent_update', 'rb')
-
-count = 0
-for comment in movieComments:
-    # print comment
-    inputTweets.append(unicode(comment, "utf-8"))
-    count = count + 1
-    if count == 100:
-        break
-plainstring2[0]=inputTweets
-# print type(plainstring2[0])
-trainingDataFile = 'data/full_training_dataset.csv'
-#classifierDumpFile = 'data/test/svm_test_model.pickle'
-classifierDumpFile ='data/test/maxent_test_model.pickle'
-keyword = 'iphone'
-time = 'today'
-trainingRequired = 0
-print plainstring2
-#sc = libsvm_classifier.SVMClassifier(plainstring2, keyword, time,\
- #                             trainingDataFile, classifierDumpFile, trainingRequired)
-
-
-#sc = max_entropy_classifier.MaxEntClassifier(plainstring2, keyword, time,\
- #                                 trainingDataFile, classifierDumpFile, trainingRequired)
-
-
-sc = naive_bayes_classifier.NaiveBayesClassifier(plainstring2, keyword, time,\
+    count = 0
+    for comment in movieComments:
+        # print comment
+        inputTweets.append(unicode(comment, "utf-8"))
+        count = count + 1
+    #print len(inputTweets)
+    plainstring2[0]=inputTweets
+    # print type(plainstring2[0])
+    trainingDataFile = 'data/full_training_dataset.csv'
+    #classifierDumpFile = 'data/test/svm_test_model.pickle'
+    
+    keyword = 'iphone'
+    time = 'today'
+    trainingRequired = 0
+    #print plainstring2
+    if(algorithm == 'baseline'):
+        print
+    elif(algorithm == 'naivebayes'):
+        classifierDumpFile ='data/test/naivebayes_test_model.pickle'
+        sc = naive_bayes_classifier.NaiveBayesClassifier(plainstring2, keyword, time,\
+                                        trainingDataFile, classifierDumpFile, trainingRequired)
+        sc.classify()
+    elif(algorithm == 'maxent'):
+        classifierDumpFile ='data/test/maxent_test_model.pickle'
+        sc = max_entropy_classifier.MaxEntClassifier(plainstring2, keyword, time,\
+                                         trainingDataFile, classifierDumpFile, trainingRequired)
+        sc.classify()
+    elif(algorithm == 'svm'):
+        classifierDumpFile ='data/test/svm_test_model.pickle'
+        sc = libsvm_classifier.SVMClassifier(plainstring2, keyword, time,\
                                   trainingDataFile, classifierDumpFile, trainingRequired)
-
-sc.classify()
+        sc.classify()
