@@ -1,24 +1,32 @@
 import csv
 import re
 
+
 def process_tweet(tweet):
-    #Conver to lower case
+    # Conver to lower case
     tweet = tweet.lower()
-    #Convert https?://* to URL
+
+    # Convert https?://* to URL
     tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))','URL',tweet)
-    #Convert @username to AT_USER
-    tweet = re.sub('@[^\s]+','AT_USER',tweet)    
-    #Remove additional white spaces
+
+    # Convert @username to AT_USER
+    tweet = re.sub('@[^\s]+', 'AT_USER', tweet)
+
+    # Remove additional white spaces
     tweet = re.sub('[\s]+', ' ', tweet)
-    #Replace #word with word
+
+    # Replace #word with word
     tweet = re.sub(r'#([^\s]+)', r'\1', tweet)
-    #trim
+
+    # trim
     tweet = tweet.strip()
-    #remove last " at string end
+    # remove last " at string end
     tweet = tweet.rstrip('\'"')
     tweet = tweet.lstrip('\'"')
     return tweet
-#end 
+
+
+# end
 
 def uniq(list):
     l = []
@@ -26,15 +34,18 @@ def uniq(list):
         if e not in l:
             l.append(e)
     return l
-#end
+
+
+# end
 
 def replaceTwoOrMore(s):
     # pattern to look for three or more repetitions of any character, including
     # newlines.
-    pattern = re.compile(r"(.)\1{1,}", re.DOTALL) 
+    pattern = re.compile(r"(.)\1{1,}", re.DOTALL)
     return pattern.sub(r"\1\1", s)
 
-inpfile = open("stopwords.txt", "r")            
+
+inpfile = open("stopwords.txt", "r")
 line = inpfile.readline()
 stopWords = []
 stopWords.append('AT_USER')
@@ -46,7 +57,7 @@ while line:
 inpfile.close()
 
 feature_vector = []
-file1 = 'full_training_dataset.csv'
+file1 = '../full_training_dataset.csv'
 fp1 = open(file1, 'rb')
 file2 = 'feature_list.txt'
 fp2 = open(file2, 'w')
@@ -58,22 +69,23 @@ for row in reader1:
     tweet = process_tweet(row[1])
     words = tweet.split()
     for w in words:
-        w = replaceTwoOrMore(w) 
+        w = replaceTwoOrMore(w)
         w = w.strip('\'"?,.')
-        val = re.search(r"^[a-zA-Z][a-zA-Z0-9]*[a-zA-Z]+[a-zA-Z0-9]*$", w)
-        if(w in stopWords or val is None):
+        # check if it consists of only words
+        word_val = re.search(r"^[a-zA-Z][a-zA-Z0-9]*[a-zA-Z]+[a-zA-Z0-9]*$", w)
+        # check if it contains emoticons
+        emoticons_str = r'(?::|;|=)(?:-)?(?:\)|\(|d$|p$)'
+        emo_val = re.match(emoticons_str, w)
+        # ignore if it is a stopWord
+        if (w in stopWords or word_val is None and emo_val is None):
             continue
         else:
             feature_vector.append(w.lower())
-#endloop
+# endloop
 feature_vector = sorted(uniq(feature_vector))
 
 for item in feature_vector:
-    fp2.write(item+"\n")
+    fp2.write(item + "\n")
 
 fp1.close()
 fp2.close()
-
-
-    
-
