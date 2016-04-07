@@ -21,7 +21,7 @@ if(algorithm == 'baseline'):
 elif(algorithm == 'naivebayes'):
     print "naive"
     testDataFile = 'data/test/test.csv'
-    classifierDumpFile = 'data/test/naivebayes_test_model.pickle'
+    classifierDumpFile = 'data/test/naivebayes_neat_model.pickle'
     print "naivebaes"
     trainingRequired = 0
     nb = naive_bayes_classifier.NaiveBayesClassifier(plainstring2, None, None,\
@@ -30,7 +30,7 @@ elif(algorithm == 'naivebayes'):
     nb.accuracy()
 elif(algorithm == 'maxent'):
     testDataFile = 'data/test/test.csv'
-    classifierDumpFile = 'data/test/maxent_test_model.pickle'
+    classifierDumpFile = 'data/test/maxent_neat_model.pickle'
     print "maxent"
     trainingRequired = 0
     print "Start",time
@@ -44,7 +44,7 @@ elif(algorithm == 'maxent'):
 elif(algorithm == 'svm'):
     print "svm"
     testDataFile = 'data/test/test.csv'
-    classifierDumpFile = 'data/test/svm_test_model.pickle'
+    classifierDumpFile = 'data/test/svm_neat_model.pickle'
     trainingRequired = 0
     #print tweets
     sc = libsvm_classifier.SVMClassifier(plainstring2, None, None,\

@@ -57,9 +57,9 @@ while line:
 inpfile.close()
 
 feature_vector = []
-file1 = '../full_training_dataset.csv'
+file1 = '../training_neatfile.csv'
 fp1 = open(file1, 'rb')
-file2 = 'feature_list.txt'
+file2 = '../feature_list_neat.txt'
 fp2 = open(file2, 'w')
 
 reader1 = csv.reader(fp1, delimiter=',', quotechar='"', escapechar='\\')

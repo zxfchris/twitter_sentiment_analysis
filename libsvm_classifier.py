@@ -11,7 +11,7 @@ class SVMClassifier:
     def __init__(self, data, keyword, time, trainingDataFile, classifierDumpFile, trainingRequired = 0):
         #Instantiate classifier helper
         #print "svm init"
-        self.helper = classifier_helper.ClassifierHelper('data/feature_list.txt')
+        self.helper = classifier_helper.ClassifierHelper('data/feature_list_neat.txt')
 
         self.lenTweets = len(data)
         self.origTweets = self.getUniqData(data)

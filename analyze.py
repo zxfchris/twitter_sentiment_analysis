@@ -26,16 +26,16 @@ if(algorithm == 'baseline'):
     val = bc.getHTML()
 elif(algorithm == 'naivebayes'):
     print "naive"
-    trainingDataFile = 'data/full_training_dataset.csv'
+    trainingDataFile = 'data/training_neatfile.csv'
 
-    classifierDumpFile = 'data/test/naivebayes_test_model.pickle'
+    classifierDumpFile = 'data/test/naivebayes_neat_model.pickle'
     trainingRequired = 1
     nb = naive_bayes_classifier.NaiveBayesClassifier(tweets, keyword, time,\
                                   trainingDataFile, classifierDumpFile, trainingRequired)
     nb.classify()
 elif(algorithm == 'maxent'):
-    trainingDataFile = 'data/full_training_dataset.csv'
-    classifierDumpFile = 'data/test/maxent_test_model.pickle'
+    trainingDataFile = 'data/training_neatfile.csv'
+    classifierDumpFile = 'data/test/maxent_neat_model.pickle'
     print "maxent"
     trainingRequired = 0
     print "Start",time
@@ -51,8 +51,8 @@ elif(algorithm == 'svm'):
     #trainingDataFile = 'data/full_training_dataset.csv'
     print "svm"
     testDataFile = 'data/test/test.csv'
-    trainingDataFile = 'data/full_training_dataset.csv'
-    classifierDumpFile = 'data/test/svm_test_model.pickle'
+    trainingDataFile = 'data/training_neatfile.csv'
+    classifierDumpFile = 'data/test/svm_neat_model.pickle'
     trainingRequired = 0
     # sc = libsvm_classifier.SVMClassifier(tweets, keyword, time,\
     #                               trainingDataFile, classifierDumpFile, trainingRequired)

@@ -12,7 +12,7 @@ class BaselineClassifier:
     #start __init__
     def __init__(self, data, keyword, time):
         #Instantiate classifier helper        
-        self.helper = classifier_helper.ClassifierHelper('data/feature_list.txt')
+        self.helper = classifier_helper.ClassifierHelper('data/feature_list_neat.txt')
         #Remove duplicates
 
         self.lenTweets = len(data)

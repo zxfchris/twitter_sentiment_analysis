@@ -133,7 +133,7 @@ for i in range(0,45):
     #print len(inputTweets)
     plainstring2[0]=inputTweets
     # print type(plainstring2[0])
-    trainingDataFile = 'data/full_training_dataset.csv'
+    trainingDataFile = 'data/training_neatfile.csv'
     #classifierDumpFile = 'data/test/svm_test_model.pickle'
     
     keyword = 'iphone'
@@ -143,17 +143,17 @@ for i in range(0,45):
     if(algorithm == 'baseline'):
         print
     elif(algorithm == 'naivebayes'):
-        classifierDumpFile ='data/test/naivebayes_test_model.pickle'
+        classifierDumpFile ='data/test/naivebayes_neat_model.pickle'
         sc = naive_bayes_classifier.NaiveBayesClassifier(plainstring2, keyword, time,\
                                         trainingDataFile, classifierDumpFile, trainingRequired)
         sc.classify()
     elif(algorithm == 'maxent'):
-        classifierDumpFile ='data/test/maxent_test_model.pickle'
+        classifierDumpFile ='data/test/maxent_neat_model.pickle'
         sc = max_entropy_classifier.MaxEntClassifier(plainstring2, keyword, time,\
                                          trainingDataFile, classifierDumpFile, trainingRequired)
         sc.classify()
     elif(algorithm == 'svm'):
-        classifierDumpFile ='data/test/svm_test_model.pickle'
+        classifierDumpFile ='data/test/svm_neat_model.pickle'
         sc = libsvm_classifier.SVMClassifier(plainstring2, keyword, time,\
                                   trainingDataFile, classifierDumpFile, trainingRequired)
         sc.classify()
